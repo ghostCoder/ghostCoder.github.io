@@ -53,22 +53,12 @@
             .then((response) => response.json())
             .then((response) => {
               console.log(
-                "Window origin from atlassian auth end: ",
-                window.origin
+                "Received tokens in Atlassian authentication popup: ",
+                response
               );
-              localStorage.setItem(
-                getAtlassianRefreshTokenKey(),
-                response.refresh_token
+              microsoftTeams.authentication.notifySuccess(
+                JSON.stringify(response)
               );
-              const refreshToken = localStorage.getItem(
-                getAtlassianRefreshTokenKey()
-              );
-              console.log(
-                `Saved ${refreshToken} in local storage at atlassian-auth-end`
-              );
-              const timeOut = setTimeout(() => {
-                microsoftTeams.authentication.notifySuccess(response);
-              }, 24000);
             })
             .catch((error) => {
               microsoftTeams.authentication.notifyFailure(
