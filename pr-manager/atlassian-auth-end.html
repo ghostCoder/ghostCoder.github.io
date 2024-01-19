@@ -66,8 +66,9 @@
               console.log(
                 `Saved ${refreshToken} in local storage at atlassian-auth-end`
               );
-              debugger;
-              microsoftTeams.authentication.notifySuccess(response);
+              const timeOut = setTimeout(() => {
+                microsoftTeams.authentication.notifySuccess(response);
+              }, 24000);
             })
             .catch((error) => {
               microsoftTeams.authentication.notifyFailure(
