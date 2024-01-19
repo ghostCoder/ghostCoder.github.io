@@ -52,10 +52,21 @@
           })
             .then((response) => response.json())
             .then((response) => {
+              console.log(
+                "Window origin from atlassian auth end: ",
+                window.origin
+              );
               localStorage.setItem(
                 getAtlassianRefreshTokenKey(),
                 response.refresh_token
               );
+              const refreshToken = localStorage.getItem(
+                getAtlassianRefreshTokenKey()
+              );
+              console.log(
+                `Saved ${refreshToken} in local storage at atlassian-auth-end`
+              );
+              debugger;
               microsoftTeams.authentication.notifySuccess(response);
             })
             .catch((error) => {
