@@ -38,15 +38,15 @@
           const msalInstance = new window.msal.PublicClientApplication(
             msalConfig
           );
-          await setTimeout(() => {
-            console.log("At auth end");
-          }, 10000);
+          await new Promise((resolve) => setTimeout(resolve, 10000));
           msalInstance
             .handleRedirectPromise()
             .then(async (tokenResponse) => {
-              await setTimeout(() => {
-                console.log(tokenResponse);
-              }, 10000);
+              await new Promise((resolve) =>
+                setTimeout((resolve) => {
+                  console.log(tokenResponse);
+                }, 10000)
+              );
               if (tokenResponse !== null) {
                 microsoftTeams.authentication.notifySuccess(
                   JSON.stringify({
