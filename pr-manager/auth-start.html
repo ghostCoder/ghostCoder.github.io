@@ -41,7 +41,7 @@
           const msalInstance = new msal.PublicClientApplication(msalConfig);
           const scopesArray = scope.split(" ");
           const scopesRequest = {
-            scopes: scopesArray,
+            scopes: [...scopesArray, "offline_access"],
             redirectUri:
               window.location.origin +
               window.location.pathname.slice(0, -16) +
