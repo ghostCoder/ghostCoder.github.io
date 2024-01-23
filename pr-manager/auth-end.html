@@ -43,9 +43,10 @@
             .handleRedirectPromise()
             .then(async (tokenResponse) => {
               await new Promise((resolve) =>
-                setTimeout((resolve) => {
+                setTimeout(async () => {
                   console.log(tokenResponse);
-                  resolve();
+                  await new Promise((resolve) => setTimeout(resolve, 5000));
+                  resolve("Done");
                 }, 10000)
               );
               if (tokenResponse !== null) {
