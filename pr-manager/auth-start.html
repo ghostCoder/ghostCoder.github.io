@@ -46,6 +46,7 @@
               window.location.origin +
               window.location.pathname.slice(0, -16) +
               `/auth-end.html?clientId=${clientId}`,
+            loginHint: loginHint,
           };
           console.log(
             "MS Graph API redirect URI: ",
