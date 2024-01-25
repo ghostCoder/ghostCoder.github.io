@@ -1,0 +1,66 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.16",
+    "version": "1.0.0",
+    "id": "${{TEAMS_APP_ID}}",
+    "packageName": "com.microsoft.teams.extension",
+    "developer": {
+        "name": "Teams PR Manager",
+        "websiteUrl": "${{TAB_ENDPOINT}}",
+        "privacyUrl": "${{TAB_ENDPOINT}}",
+        "termsOfUseUrl": "${{TAB_ENDPOINT}}"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "Teams PR Manager-${{TEAMSFX_ENV}}",
+        "full": "Full name for Teams PR Manager"
+    },
+    "description": {
+        "short": "Short description of Teams PR Manager",
+        "full": "Full description of Teams PR Manager"
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [],
+    "composeExtensions": [],
+    "configurableTabs": [
+        {
+            "configurationUrl": "${{TAB_ENDPOINT}}/configuration.html",
+            "scopes": [
+                "team",
+                "groupchat"
+            ],
+            "canUpdateConfiguration": false,
+            "context": [
+                "channelTab",
+                "privateChatTab",
+                "personalTab"
+            ]
+        }
+    ],
+    "staticTabs": [
+        {
+            "entityId": "index0",
+            "name": "Pull request",
+            "contentUrl": "${{TAB_ENDPOINT}}",
+            "websiteUrl": "${{TAB_ENDPOINT}}",
+            "scopes": [
+                "personal", "team", "groupChat"
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [
+        "${{TAB_DOMAIN}}"
+    ],
+    "webApplicationInfo": {
+        "id": "${{AAD_APP_CLIENT_ID}}",
+        "resource": "api://${{TAB_DOMAIN}}/${{AAD_APP_CLIENT_ID}}"
+    },
+    "showLoadingIndicator": true
+}
