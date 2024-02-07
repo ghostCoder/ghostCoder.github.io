@@ -12,59 +12,53 @@
       integrity="sha384-4Gy2G+qxzDVdrdemcVqKVQvaSK1Ghg3x6xcsaMLPc/pw7KPtiogHGM97LTWF2PWg"
       crossorigin="anonymous"
     ></script>
+    <script
+      type="text/javascript"
+      src="https://alcdn.msauth.net/browser/2.21.0/js/msal-browser.min.js"
+      integrity="sha384-s/NxjjAgw1QgpDhOlVjTceLl4axrp5nqpUbCPOEQy1PqbFit9On6uw2XmEF1eq0s"
+      crossorigin="anonymous"
+    ></script>
     <script type="text/javascript">
-      // THESE TWO CONSTANTS NEED TO BE CHANGED ON CHANGING THE CORRERSPONDING SETTINGS OF AZURE APP REGISTRATION
-      const TEAMS_CONFIG = {
-        CLIENT_ID: "7674fd74-8f6a-4ddd-870f-396349aa44d6",
-      };
-      const MS_TENANT_ID = "52bc7e22-6631-4c88-9c4f-9c115c186148";
-      const MS_ACCESS_TOKEN_URL = `https://login.microsoftonline.com/${MS_TENANT_ID}/oauth2/v2.0/token`;
+      var currentURL = new URL(window.location);
+      var clientId = currentURL.searchParams.get("clientId");
 
-      const MS_AUTH_CODE_REDIRECT_URI = window.location.href;
-
-      const getMSCodeVerifierKey = () => {
-        return `${TEAMS_CONFIG.CLIENT_ID}:MS-code-verifier`;
-      };
-
-      microsoftTeams.app.initialize().then(async () => {
-        const parameters = new URLSearchParams(window.location.href);
-        if (!parameters.has("code")) {
-          microsoftTeams.authentication.notifyFailure(
-            "Got no authorization code"
-          );
-        } else {
-          const code = parameters.get("code");
-          const CODE_VERIFIER = localStorage.getItem(getMSCodeVerifierKey());
-          localStorage.removeItem(getMSCodeVerifierKey());
-          await fetch(MS_ACCESS_TOKEN_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+      microsoftTeams.app.initialize().then(() => {
+        microsoftTeams.app.getContext().then(async (context) => {
+          const msalConfig = {
+            auth: {
+              clientId: clientId,
+              authority: `https://login.microsoftonline.com/${context.user.tenant.id}`,
+              navigateToLoginRequestUrl: false,
             },
-            body: JSON.stringify({
-              client_id: TEAMS_CONFIG.CLIENT_ID,
-              code: code,
-              redirect_uri: MS_AUTH_CODE_REDIRECT_URI,
-              grant_type: "authorization_code",
-              code_verifier: CODE_VERIFIER,
-            }),
-          })
-            .then((response) => response.json())
-            .then((response) => {
-              console.log(
-                "Received tokens in MS authentication popup: ",
-                response
-              );
-              microsoftTeams.authentication.notifySuccess(
-                JSON.stringify(response)
-              );
+            cache: {
+              cacheLocation: "localStorage",
+            },
+          };
+
+          const msalInstance = new window.msal.PublicClientApplication(
+            msalConfig
+          );
+          msalInstance
+            .handleRedirectPromise()
+            .then((tokenResponse) => {
+              if (tokenResponse !== null) {
+                microsoftTeams.authentication.notifySuccess(
+                  JSON.stringify({
+                    localStorage: localStorage,
+                  })
+                );
+              } else {
+                microsoftTeams.authentication.notifyFailure(
+                  "Get empty response."
+                );
+              }
             })
             .catch((error) => {
               microsoftTeams.authentication.notifyFailure(
-                JSON.stringify({ error })
+                JSON.stringify(error)
               );
             });
-        }
+        });
       });
     </script>
   </body>

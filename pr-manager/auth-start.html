@@ -12,51 +12,48 @@
       integrity="sha384-4Gy2G+qxzDVdrdemcVqKVQvaSK1Ghg3x6xcsaMLPc/pw7KPtiogHGM97LTWF2PWg"
       crossorigin="anonymous"
     ></script>
+    <script
+      type="text/javascript"
+      src="https://alcdn.msauth.net/browser/2.21.0/js/msal-browser.min.js"
+      integrity="sha384-s/NxjjAgw1QgpDhOlVjTceLl4axrp5nqpUbCPOEQy1PqbFit9On6uw2XmEF1eq0s"
+      crossorigin="anonymous"
+    ></script>
     <script type="text/javascript">
-      // THIS CONSTANT NEEDS TO BE CHANGED ON CHANGING THE CORRERSPONDING THE AUZURE APP REGISTRATION SETTINGS
-      const TEAMS_CONFIG = {
-        CLIENT_ID: "7674fd74-8f6a-4ddd-870f-396349aa44d6",
-      };
+      microsoftTeams.app.initialize().then(() => {
+        microsoftTeams.app.getContext().then(async (context) => {
+          // Generate random state string and store it, so we can verify it in the callback
+          var currentURL = new URL(window.location);
+          var clientId = currentURL.searchParams.get("clientId");
+          var scope = currentURL.searchParams.get("scope");
+          var loginHint = currentURL.searchParams.get("loginHint");
 
-      const MS_TENANT_ID = "52bc7e22-6631-4c88-9c4f-9c115c186148";
-      const MS_AUTH_CODE_SCOPE =
-        "ChatMember.Read GroupMember.Read.All User.ReadBasic.All offline_access";
-      const MS_AUTH_CODE_URL = `https://login.microsoftonline.com/${MS_TENANT_ID}/oauth2/v2.0/authorize`;
+          const msalConfig = {
+            auth: {
+              clientId: clientId,
+              authority: `https://login.microsoftonline.com/${context.user.tenant.id}`,
+              navigateToLoginRequestUrl: false,
+            },
+            cache: {
+              cacheLocation: "localStorage",
+            },
+          };
 
-      const MS_AUTH_CODE_REDIRECT_URI =
-        window.location.origin +
-        window.location.pathname.slice(0, -16) +
-        `/auth-end.html?clientId=${TEAMS_CONFIG.CLIENT_ID}`;
-
-      const getMSCodeVerifierKey = () => {
-        return `${TEAMS_CONFIG.CLIENT_ID}:MS-code-verifier`;
-      };
-
-      microsoftTeams.app.initialize().then(async () => {
-        const randomString = (length, chars) => {
-          var result = "";
-          for (var i = length; i > 0; --i)
-            result += chars[Math.floor(Math.random() * chars.length)];
-          return result;
-        };
-        const STATE = randomString(
-          15,
-          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        );
-        const CODE_VERIFIER = randomString(
-          100,
-          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._~"
-        );
-        localStorage.setItem(getMSCodeVerifierKey(), CODE_VERIFIER);
-        window.location.assign(
-          `${MS_AUTH_CODE_URL}?&client_id=${
-            TEAMS_CONFIG.CLIENT_ID
-          }&redirect_uri=${encodeURIComponent(
-            MS_AUTH_CODE_REDIRECT_URI
-          )}&response_mode=query&scope=${encodeURIComponent(
-            MS_AUTH_CODE_SCOPE
-          )}&state=${STATE}&response_type=code&code_challenge=${CODE_VERIFIER}&code_challenge_method=plain`
-        );
+          const msalInstance = new msal.PublicClientApplication(msalConfig);
+          const scopesArray = scope.split(" ");
+          const scopesRequest = {
+            scopes: scopesArray,
+            redirectUri:
+              window.location.origin +
+              window.location.pathname.slice(0, -16) +
+              `/auth-end.html?clientId=${clientId}`,
+            loginHint: loginHint,
+          };
+          console.log(
+            "MS Graph API redirect URI: ",
+            scopesRequest.loginRedirect
+          );
+          await msalInstance.loginRedirect(scopesRequest);
+        });
       });
     </script>
   </body>
