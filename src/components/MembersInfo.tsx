@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { app } from "@microsoft/teams-js";
 import { useGraphWithCredential } from "@microsoft/teamsfx-react";
 import { Stack } from "@fluentui/react";
 import { PRTabsMenu } from "./prTabs/PRTabsMenu";
@@ -6,6 +7,11 @@ import { Loading } from "./Loading";
 import { Error } from "./Error";
 import { TeamsFxContext } from "../contexts/Context";
 import { MembersContext } from "../contexts/Context";
+import {
+  CHAT_READ_SCOPES,
+  TEAM_READ_SCOPES,
+  CHANNEL_READ_SCOPES,
+} from "../utilities/constants";
 
 type memberObject = {
   "@odata.type"?: string;
@@ -20,19 +26,33 @@ type memberObject = {
 };
 
 export const MembersInfo = ({
-  version,
-  type,
-  id,
-  scope,
   user,
+  context,
 }: {
-  version: "v1.0" | "beta";
-  type: "groups" | "chats";
-  id: string | undefined;
-  scope: string[];
   user: string;
+  context: app.Context;
 }) => {
   const { teamsUserCredential } = useContext(TeamsFxContext);
+  const type =
+    context.chat === undefined
+      ? context.team?.groupId === undefined
+        ? "Teams"
+        : "groups"
+      : "chats";
+  const scope =
+    type === "Teams"
+      ? CHANNEL_READ_SCOPES
+      : type === "groups"
+      ? TEAM_READ_SCOPES
+      : CHAT_READ_SCOPES;
+  const version = type === "groups" || type === "Teams" ? "v1.0" : "beta";
+  const id =
+    type === "Teams"
+      ? `${context.channel?.ownerGroupId}/channels/${context.channel?.id}`
+      : type === "groups"
+      ? context.team?.groupId
+      : context.chat?.id;
+
   const {
     loading,
     error,

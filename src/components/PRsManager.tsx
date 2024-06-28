@@ -5,7 +5,6 @@ import { Text } from "@fluentui/react-components";
 import { InfoLabel } from "@fluentui/react-components/unstable";
 import { MembersInfo } from "./MembersInfo";
 import { TokensInCacheContext } from "../contexts/Context";
-import { TEAM_READ_SCOPES, CHAT_READ_SCOPES } from "../utilities/constants";
 import { useCacheTokens } from "../utilities/useCacheTokens";
 import { Loading } from "./Loading";
 
@@ -21,10 +20,6 @@ export const PRsManager = ({ context }: { context: app.Context }) => {
     setAtlassianInCache,
   } = useCacheTokens();
 
-  const type = context.chat === undefined ? "groups" : "chats";
-  const scope = type === "groups" ? TEAM_READ_SCOPES : CHAT_READ_SCOPES;
-  const version = type === "groups" ? "v1.0" : "beta";
-  const id = type === "groups" ? context.team?.groupId : context.chat?.id;
   const user =
     context.user && context.user.loginHint
       ? context.user.loginHint.slice(0, context.user.loginHint.indexOf("@"))
@@ -111,13 +106,7 @@ export const PRsManager = ({ context }: { context: app.Context }) => {
         gitInCache,
       }}
     >
-      <MembersInfo
-        version={version}
-        id={id}
-        type={type}
-        scope={scope}
-        user={user}
-      />
+      <MembersInfo context={context} user={user} />
     </TokensInCacheContext.Provider>
   );
 };

@@ -198,7 +198,7 @@ export const columnSizes = {
     minWidth: 220,
   },
   approvedBy: {
-    minWidth: 115,
+    minWidth: 200,
   },
   prStatus: {
     minWidth: 140,

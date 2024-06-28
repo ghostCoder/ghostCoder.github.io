@@ -35,6 +35,11 @@ export const CHAT_READ_SCOPES: string[] = [
   "User.ReadBasic.All",
 ];
 
+export const CHANNEL_READ_SCOPES: string[] = [
+  "ChannelMember.Read.All",
+  "User.ReadBasic.All",
+];
+
 // Atlassian Constants
 
 export const ATL_CLIENT_ID: string = "oDw4QhW5t8135WXarJv2IdcfNTseeMdM";
